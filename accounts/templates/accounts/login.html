@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Bus Staff Login</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-card">
+            <h1>Nova Bus</h1>
+            <p class="subtitle">Staff Access</p>
+
+            {% if form.errors %}
+                <div class="error">Incorrect username or password.</div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <label for="id_username">Username</label>
+                {{ form.username }}
+
+                <label for="id_password">Password</label>
+                {{ form.password }}
+
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <a class="back-link" href="{% url 'loops:dashboard' %}">Back to bus dashboard</a>
+        </section>
+    </main>
+</body>
+</html>

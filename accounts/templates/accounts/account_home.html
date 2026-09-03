@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Bus Staff Account</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-card">
+            <h1>Staff Account</h1>
+            <p class="subtitle">Signed in as {{ request.user.username }}</p>
+
+            <a class="button-link" href="{% url 'loops:dashboard' %}">Open Bus Dashboard</a>
+
+            <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="secondary">Sign Out</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
