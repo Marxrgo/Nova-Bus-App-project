@@ -11,7 +11,7 @@
     <main class="login-shell">
         <section class="login-card">
             <h1>Nova Bus</h1>
-            <p class="subtitle">Staff Access</p>
+            <p class="subtitle">Teacher / Admin Access</p>
 
             {% if form.errors %}
                 <div class="error">Incorrect username or password.</div>
@@ -32,7 +32,7 @@
                 <button type="submit">Sign In</button>
             </form>
 
-            <a class="back-link" href="{% url 'loops:dashboard' %}">Back to bus dashboard</a>
+            <a class="back-link" href="{% url 'loops:dashboard' %}">Back to student bus view</a>
         </section>
     </main>
 </body>
