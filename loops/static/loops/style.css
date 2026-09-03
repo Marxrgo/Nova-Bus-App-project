@@ -1,0 +1,43 @@
+body { 
+    font-family: sans-serif; 
+    margin: 20px; 
+    background-color: aquamarine;
+}
+
+.grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+    gap: 10px; 
+    margin-bottom: 30px; 
+}
+
+.card { 
+    border: 2px solid #ccc; 
+    padding: 12px; 
+    border-radius: 6px; 
+    text-align: center; 
+    background: #f9f9f9; 
+}
+
+.card.occupied { 
+    border-color: #2e7d32; 
+    background: #e8f5e9; 
+}
+
+.slot-num { 
+    font-weight: bold; 
+    font-size: 0.9em; 
+    color: #555; 
+}
+
+.bus-num { 
+    font-size: 1.4em; 
+    font-weight: bold; 
+    margin-top: 5px; 
+    color: #111; 
+}
+
+.empty { 
+    color: #888; 
+    font-style: italic; 
+}

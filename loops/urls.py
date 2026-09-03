@@ -1,0 +1,8 @@
+from django.urls import path
+from . import views
+
+app_name = 'loops'
+
+urlpatterns = [
+    path('', views.loop_dashboard, name= 'dashboard')
+]

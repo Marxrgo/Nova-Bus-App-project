@@ -1,0 +1,51 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nova Bus Loop Dashboard</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+
+    <h1>Bus Loop Status</h1>
+
+    <h2>Music Loop</h2>
+    <div class="grid">
+        {% for slot in music_slots %}
+            <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                <div class="bus-num">
+                    {% if slot.bus_number %}
+                        Bus #{{ slot.bus_number }}
+                    {% else %}
+                        <span class="empty">Empty</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No slots configured for Music Loop.</p>
+        {% endfor %}
+    </div>
+
+    <h2>IB Loop</h2>
+    <div class="grid">
+        {% for slot in ib_slots %}
+            <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                <div class="bus-num">
+                    {% if slot.bus_number %}
+                        Bus #{{ slot.bus_number }}
+                    {% else %}
+                        <span class="empty">Empty</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No slots configured for IB Loop.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
