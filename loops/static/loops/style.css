@@ -1,7 +1,8 @@
 body { 
     font-family: sans-serif; 
-    margin: 20px; 
-    background-color: aquamarine;
+    margin: 20px;
+    background-color: aquamarine; 
+    
 }
 
 .grid { 
@@ -11,17 +12,36 @@ body {
     margin-bottom: 30px; 
 }
 
+/* Link Wrapper Rules */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .card { 
     border: 2px solid #ccc; 
     padding: 12px; 
     border-radius: 6px; 
     text-align: center; 
     background: #f9f9f9; 
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Hover effect for interactive slots */
+.card-link:hover .card {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-color: #999;
 }
 
 .card.occupied { 
     border-color: #2e7d32; 
     background: #e8f5e9; 
+}
+
+.card-link:hover .card.occupied {
+    border-color: #1b5e20;
 }
 
 .slot-num { 

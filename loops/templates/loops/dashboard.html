@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,16 +13,18 @@
     <h2>Music Loop</h2>
     <div class="grid">
         {% for slot in music_slots %}
-            <div class="card {% if slot.bus_number %}occupied{% endif %}">
-                <div class="slot-num">Slot {{ slot.slot_number }}</div>
-                <div class="bus-num">
-                    {% if slot.bus_number %}
-                        Bus #{{ slot.bus_number }}
-                    {% else %}
-                        <span class="empty">Empty</span>
-                    {% endif %}
+            <a href="{% url 'loops:update_slot' slot.id %}" class="card-link">
+                <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                    <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                    <div class="bus-num">
+                        {% if slot.bus_number %}
+                            Bus #{{ slot.bus_number }}
+                        {% else %}
+                            <span class="empty">Empty</span>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </a>
         {% empty %}
             <p>No slots configured for Music Loop.</p>
         {% endfor %}
@@ -32,16 +33,18 @@
     <h2>IB Loop</h2>
     <div class="grid">
         {% for slot in ib_slots %}
-            <div class="card {% if slot.bus_number %}occupied{% endif %}">
-                <div class="slot-num">Slot {{ slot.slot_number }}</div>
-                <div class="bus-num">
-                    {% if slot.bus_number %}
-                        Bus #{{ slot.bus_number }}
-                    {% else %}
-                        <span class="empty">Empty</span>
-                    {% endif %}
+            <a href="{% url 'loops:update_slot' slot.id %}" class="card-link">
+                <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                    <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                    <div class="bus-num">
+                        {% if slot.bus_number %}
+                            Bus #{{ slot.bus_number }}
+                        {% else %}
+                            <span class="empty">Empty</span>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </a>
         {% empty %}
             <p>No slots configured for IB Loop.</p>
         {% endfor %}

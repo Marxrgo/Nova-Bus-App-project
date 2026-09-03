@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Slot {{ slot.slot_number }}</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+
+    <h1>Update {{ slot.get_loop_display }} - Slot {{ slot.slot_number }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="id_bus_number">Bus Number:</label>
+            {{ form.bus_number }}
+        </div>
+        <br>
+        <button type="submit">Save Bus Number</button>
+        <a href="{% url 'loops:dashboard' %}">Cancel</a>
+    </form>
+
+</body>
+</html>
