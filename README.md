@@ -1,11 +1,16 @@
 # Nova-Bus-App-project
+*!Do not push to or create pr's to main , push them to dev*
 
 To setup, setup a python venv(virual environment) w/ python3 -m venv venv
 run: pip install -r requirements.txt
 
-to launch server(on your computer) run: python manage.py runserver
+to launch server(on your computer) run: `python manage.py runserver`
 
 to populate data(rows in db for testing) run:
+
+`python3 manage.py shell`
+
+then
 
 ```python
 from loops.models import BusSlot, LoopType

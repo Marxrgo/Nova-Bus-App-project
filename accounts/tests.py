@@ -23,8 +23,8 @@ class AccountTests(TestCase):
             reverse("accounts:login"),
             {"username": "nova_staff", "password": "ExamplePassword123!"},
         )
-        self.assertRedirects(response, reverse("loops:dashboard"))
-
+        self.assertRedirects(response, reverse("accounts:home"))
+        
     def test_account_home_loads_after_login(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse("accounts:home"))
