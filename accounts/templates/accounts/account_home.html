@@ -13,7 +13,7 @@
             <h1>Staff Account</h1>
             <p class="subtitle">Signed in as {{ request.user.username }}</p>
 
-            <a class="button-link" href="{% url 'loops:dashboard' %}">Open Bus Dashboard</a>
+            <a class="button-link" href="{% url 'loops:dashboard' %}">Open Bus Editor</a>
 
             <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
                 {% csrf_token %}

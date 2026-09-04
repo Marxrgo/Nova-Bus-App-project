@@ -3,17 +3,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nova Bus Loop Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Bus Loop Status</title>
     <link rel="stylesheet" href="{% static 'loops/style.css' %}">
 </head>
 <body>
 
-    <h1>Bus Loop Status</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div>
+            <h1>Bus Loop Status</h1>
+            {% if user.is_authenticated and user.is_staff %}
+                <p><strong>Staff editing mode:</strong> click a bus slot to update it.</p>
+            {% else %}
+                <p>Student view — no account required.</p>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'accounts:home' %}">Staff Account</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">Staff Login</a>
+            {% endif %}
+        </div>
+    </div>
 
     <h2>Music Loop</h2>
     <div class="grid">
         {% for slot in music_slots %}
-            {% if user.is_authenticated and user.role == 'ADMIN' or user.is_superuser %}
+            {% if user.is_authenticated and user.is_staff %}
                 <a href="{% url 'loops:update_slot' slot.id %}" style="text-decoration: none; color: inherit;">
                     <div class="card {% if slot.bus_number %}occupied{% endif %}">
                         <div class="slot-num">Slot {{ slot.slot_number }}</div>
@@ -46,7 +64,7 @@
     <h2>IB Loop</h2>
     <div class="grid">
         {% for slot in ib_slots %}
-            {% if user.is_authenticated and user.role == 'ADMIN' or user.is_superuser %}
+            {% if user.is_authenticated and user.is_staff %}
                 <a href="{% url 'loops:update_slot' slot.id %}" style="text-decoration: none; color: inherit;">
                     <div class="card {% if slot.bus_number %}occupied{% endif %}">
                         <div class="slot-num">Slot {{ slot.slot_number }}</div>
