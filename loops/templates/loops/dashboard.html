@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+    <div class="dashboard-header">
         <div>
             <h1>Bus Loop Status</h1>
             {% if user.is_authenticated and user.is_staff %}
@@ -19,7 +19,7 @@
             {% endif %}
         </div>
 
-        <div>
+        <div class = "loginlink">
             {% if user.is_authenticated and user.is_staff %}
                 <a href="{% url 'accounts:home' %}">Staff Account</a>
             {% else %}
@@ -29,11 +29,14 @@
     </div>
 
     <h2>Music Loop</h2>
+    {% if user.is_authenticated and user.is_staff %}
+        <a href= "{% url 'loops:clear_loop' 'MUSIC' %}">Clear Music Loop </a>
+    {%endif%}
     <div class="grid">
         {% for slot in music_slots %}
             {% if user.is_authenticated and user.is_staff %}
-                <a href="{% url 'loops:update_slot' slot.id %}" style="text-decoration: none; color: inherit;">
-                    <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <a href="{% url 'loops:update_slot' slot.id %}" class="card-link">
+                    <div class="card{% if slot.bus_number %} occupied{% endif %}">
                         <div class="slot-num">Slot {{ slot.slot_number }}</div>
                         <div class="bus-num">
                             {% if slot.bus_number %}
@@ -45,7 +48,7 @@
                     </div>
                 </a>
             {% else %}
-                <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <div class="card{% if slot.bus_number %} occupied{% endif %}">
                     <div class="slot-num">Slot {{ slot.slot_number }}</div>
                     <div class="bus-num">
                         {% if slot.bus_number %}
@@ -62,11 +65,14 @@
     </div>
 
     <h2>IB Loop</h2>
+    {% if user.is_authenticated and user.is_staff %}
+      <a href="{% url 'loops:clear_loop' 'IB' %}">Clear IB Loop</a>
+     {% endif %}
     <div class="grid">
         {% for slot in ib_slots %}
             {% if user.is_authenticated and user.is_staff %}
-                <a href="{% url 'loops:update_slot' slot.id %}" style="text-decoration: none; color: inherit;">
-                    <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <a href="{% url 'loops:update_slot' slot.id %}" class="card-link">
+                    <div class="card{% if slot.bus_number %} occupied{% endif %}">
                         <div class="slot-num">Slot {{ slot.slot_number }}</div>
                         <div class="bus-num">
                             {% if slot.bus_number %}
@@ -78,7 +84,7 @@
                     </div>
                 </a>
             {% else %}
-                <div class="card {% if slot.bus_number %}occupied{% endif %}">
+                <div class="card{% if slot.bus_number %} occupied{% endif %}">
                     <div class="slot-num">Slot {{ slot.slot_number }}</div>
                     <div class="bus-num">
                         {% if slot.bus_number %}

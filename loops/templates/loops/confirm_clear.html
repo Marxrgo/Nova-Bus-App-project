@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clear {{ loop_display }}?</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+
+    <h1>Clear {{ loop_display }}?</h1>
+    <p>This will empty all {{ slot_count }} slots in the {{ loop_display }}. This cannot be undone.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="danger">Yes, clear it</button>
+        <a href="{% url 'loops:dashboard' %}">Cancel</a>
+    </form>
+
+</body>
+</html>
