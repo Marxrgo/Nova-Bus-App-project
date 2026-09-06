@@ -47,6 +47,12 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
+try: #adds django_extentions (for development purposes, if it exists)
+    import django_extensions
+    INSTALLED_APPS.append('django_extensions')
+except ImportError:
+    pass
+
 AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
