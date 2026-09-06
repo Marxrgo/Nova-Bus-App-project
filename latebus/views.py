@@ -63,9 +63,13 @@ def create_announcement(request):
     if request.method == "POST":
         form = AnnouncementForm(request.POST)
         if form.is_valid():
-            loop = form.cleaned_data.get("loop")
-            if loop and not is_loop_manager(request.user, loop):
-                raise PermissionDenied
+loop = form.cleaned_data.get("loop")
+if loop:
+    if not is_loop_manager(request.user, loop):
+        raise PermissionDenied
+elif not request.user.is_superuser:
+    # Blank loop means "system-wide" — only superusers may post those.
+    raise PermissionDenied
             ann = form.save(commit=False)
             ann.created_by = request.user
             ann.save()
