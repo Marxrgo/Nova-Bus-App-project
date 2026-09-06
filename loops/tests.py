@@ -16,26 +16,41 @@ class LoopDashboardTests(TestCase):
         self.music_slot = BusSlot.objects.create(loop=Looptype.MUSIC, slot_number=1)
         self.ib_slot = BusSlot.objects.create(loop=Looptype.IB, slot_number=1)
 
-    def test_dashboard_loads_for_anonymous_user(self): # Tests if anynomous users are in Student view permissions
-        response = self.client.get(reverse("loops:dashboard"))
+    def test_music_dashboard_loads_for_anonymous_user(self): # Tests if anynomous users are in Student view permissions
+        response = self.client.get(reverse("loops:loop_dashboard", args=["MUSIC"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Student view")
+
+    def test_ib_dashboard_loads_for_anonymous_user(self): # Same check but for IB loop's own page now
+        response = self.client.get(reverse("loops:loop_dashboard", args=["IB"]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Student view")
 
     def test_dashboard_shows_staff_mode_for_staff_user(self): #Tests if staff users are in staff view permissions
         staff = User.objects.create_user(username="staffer", password="pw12345!", is_staff=True)
         self.client.force_login(staff)
-        response = self.client.get(reverse("loops:dashboard"))
+        response = self.client.get(reverse("loops:loop_dashboard", args=["MUSIC"]))
         self.assertContains(response, "Staff editing mode")
 
     def test_dashboard_shows_empty_slot(self): #Tests if slots show Empty
-        response = self.client.get(reverse("loops:dashboard"))
+        response = self.client.get(reverse("loops:loop_dashboard", args=["MUSIC"]))
         self.assertContains(response, "Empty")
 
     def test_dashboard_shows_assigned_bus_number(self): #Tests if updating slots working
         self.music_slot.bus_number = 2256
         self.music_slot.save()
-        response = self.client.get(reverse("loops:dashboard"))
+        response = self.client.get(reverse("loops:loop_dashboard", args=["MUSIC"]))
         self.assertContains(response, "2256")
+
+    def test_music_dashboard_does_not_show_ib_slots(self): # Confirms the split actually keeps loops separate
+        self.ib_slot.bus_number = 9999
+        self.ib_slot.save()
+        response = self.client.get(reverse("loops:loop_dashboard", args=["MUSIC"]))
+        self.assertNotContains(response, "9999")
+
+    def test_invalid_loop_name_returns_404(self): # New page is parameterized now, so bad loop names need checking
+        response = self.client.get(reverse("loops:loop_dashboard", args=["FAKE"]))
+        self.assertEqual(response.status_code, 404)
 
 
 class UpdateSlotPermissionTests(TestCase):
@@ -79,7 +94,8 @@ class UpdateSlotSubmissionTests(TestCase):
 
     def test_assigning_a_bus_number(self):
         response = self.client.post(self.url, {"bus_number": 2256})
-        self.assertRedirects(response, reverse("loops:dashboard"))
+        # Redirect now goes to this slot's own loop page, not a shared dashboard
+        self.assertRedirects(response, reverse("loops:loop_dashboard", args=["MUSIC"]))
         self.slot.refresh_from_db()
         self.assertEqual(self.slot.bus_number, 2256)
 
@@ -88,7 +104,7 @@ class UpdateSlotSubmissionTests(TestCase):
         self.slot.save()
 
         response = self.client.post(self.url, {"bus_number": ""})
-        self.assertRedirects(response, reverse("loops:dashboard"))
+        self.assertRedirects(response, reverse("loops:loop_dashboard", args=["MUSIC"]))
         self.slot.refresh_from_db()
         self.assertIsNone(self.slot.bus_number)
 
@@ -132,7 +148,8 @@ class ClearLoopTests(TestCase):
     def test_post_clears_only_the_target_loop(self):
         self.client.force_login(self.music_manager)
         response = self.client.post(self.url)
-        self.assertRedirects(response, reverse("loops:dashboard"))
+        # Redirect now goes to Music's own loop page, not a shared dashboard
+        self.assertRedirects(response, reverse("loops:loop_dashboard", args=["MUSIC"]))
 
         self.music_slot.refresh_from_db()
         self.ib_slot.refresh_from_db()

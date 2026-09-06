@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}" />
+  </head>
+  <body>
+    <!-- loops/templates/loops/index.html -->
+    <div class="dashboard-header">
+      <div>
+        <h1>Bus Loop Status</h1>
+        <a href="{% url 'loops:loop_dashboard' 'MUSIC' %}">Music Loop</a>
+        <a href="{% url 'loops:loop_dashboard' 'IB' %}">IB Loop</a>
+      </div>
+
+      <div class="loginlink">
+        {% if user.is_authenticated and user.is_staff %}
+          <a href="{% url 'accounts:home' %}">Staff Account</a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}">Staff Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

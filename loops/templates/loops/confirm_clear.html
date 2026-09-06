@@ -14,7 +14,7 @@
     <form method="POST">
         {% csrf_token %}
         <button type="submit" class="danger">Yes, clear it</button>
-        <a href="{% url 'loops:dashboard' %}">Cancel</a>
+        <a href="{% url 'loops:loop_dashboard' loop %}">Cancel</a>
     </form>
 
 </body>

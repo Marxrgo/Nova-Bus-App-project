@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Bus Loop Status</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <div>
+            <h1>Bus Loop Status</h1>
+            {% if user.is_authenticated and user.is_staff %}
+                <p><strong>Staff editing mode:</strong> click a bus slot to update it.</p>
+            {% else %}
+                <p>Student view — no account required.</p>
+            {% endif %}
+        </div>
+
+        <div class = "loginlink">
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'accounts:home' %}">Staff Account</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">Staff Login</a>
+            {% endif %}
+            <a href="{% url 'loops:index' %}">Go back</a>
+        </div>
+    </div>
+
+    <h2>Music Loop</h2>
+    {% if user.is_authenticated and user.is_staff %}
+        <a href= "{% url 'loops:clear_loop' 'MUSIC' %}">Clear Music Loop </a>
+    {%endif%}
+    <div class="grid">
+        {% for slot in slots %}
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'loops:update_slot' slot.id %}" class="card-link">
+                    <div class="card{% if slot.bus_number %} occupied{% endif %}">
+                        <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                        <div class="bus-num">
+                            {% if slot.bus_number %}
+                                Bus #{{ slot.bus_number }}
+                            {% else %}
+                                <span class="empty">Empty</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% else %}
+                <div class="card{% if slot.bus_number %} occupied{% endif %}">
+                    <div class="slot-num">Slot {{ slot.slot_number }}</div>
+                    <div class="bus-num">
+                        {% if slot.bus_number %}
+                            Bus #{{ slot.bus_number }}
+                        {% else %}
+                            <span class="empty">Empty</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p>No slots configured for Music Loop.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

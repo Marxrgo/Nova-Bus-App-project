@@ -12,18 +12,24 @@ from django.http import Http404
 def is_loop_manager(user, loop): #helper function
     return user.is_superuser or user.managed_loop == loop
 
+def loop_index(request):
+    return render(request, 'loops/index.html')
 
-def loop_dashboard(request): #TODO: change this into 2 dashboards one for music and one for IB
-    # Fetch slots for each loop, ordered by slot_number (handled automatically by Meta ordering)
-    music_slots = BusSlot.objects.filter(loop =Looptype.MUSIC)
-    ib_slots = BusSlot.objects.filter(loop = Looptype.IB)
+
+def loop_dashboard(request, loop): #renders dash for either loop
+    if loop not in Looptype.values:
+        raise Http404("Unknown loop")
+
+    slots = BusSlot.objects.filter(loop = loop) #filters for either bus or ib loop
+    template_name = f'loops/{loop.lower()}_loop.html'  #loads corrent html/css accoding to each loop
 
     context = {
-        'music_slots': music_slots,
-        'ib_slots': ib_slots,
+        'loop': loop,
+        'loop_display': dict(Looptype.choices)[loop],
+        'slots': slots
     }
 
-    return render(request, 'loops/dashboard.html', context)
+    return render(request, template_name, context)
 
 # Restrict slot modifcation to loggin-in admins
 @login_required
@@ -37,7 +43,7 @@ def update_slot(request, slot_id):
         form = BusSlotUpdateForm(request.POST,instance = slot)
         if form.is_valid():
             form.save()
-            return redirect('loops:dashboard')
+            return redirect('loops:loop_dashboard', loop = slot.loop)
     else:
         form = BusSlotUpdateForm(instance=slot)
 
@@ -58,7 +64,7 @@ def clear_loop(request,loop):
     if request.method == 'POST':
         BusSlot.objects.filter(loop = loop).update(bus_number = None) #Filters and remove busnumber thats attached to row
         messages.success(request, f"{dict(Looptype.choices)[loop]} cleared")
-        return redirect('loops:dashboard')
+        return redirect('loops:loop_dashboard', loop = loop)
 
     slot_count = BusSlot.objects.filter(loop=loop).count()
 
