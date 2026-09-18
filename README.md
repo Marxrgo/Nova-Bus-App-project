@@ -1,6 +1,11 @@
 # Nova-Bus-App-project
 *!Do not push to or create pr's to main , push them to dev*
 
+TODO: 
+- Transfer responses to hybrid Render/Json responses(for updates)
+- Sort STATIC and Templates folders into one Global(under STATIC)
+- Establish STATIC and its JS
+
 To setup, setup a python venv(virual environment) w/ python3 -m venv venv
 run: pip install -r requirements.txt
 
