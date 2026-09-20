@@ -1,65 +1,43 @@
+from django.core.validators import MinLengthValidator , MaxLengthValidator
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
-from django.db import models
-from django.conf import settings
-from django.utils import timezone
-from datetime import timedelta
 
-from PM.models import BusSlot, Looptype
-
-
-class TimedStatusBase(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    resolved_at = models.DateTimeField(null=True, blank=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
-    )
+class Bus(models.Model):
+    number = models.PositiveIntegerField( 
+        unique= True, 
+        validators= [MinLengthValidator(1000),MaxLengthValidator(9999)]) #Bus number validation
 
     class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        if not self.expires_at and not self.pk:
-            self.expires_at = timezone.now() + timedelta(minutes=60)
-        super().save(*args, **kwargs)
-
-    @property
-    def is_active(self):
-        if self.resolved_at:
-            return False
-        if self.expires_at and timezone.now() >= self.expires_at:
-            return False
-        return True
-
-    def resolve(self):
-        self.resolved_at = timezone.now()
-        self.save(update_fields=["resolved_at"])
-
-
-class LateReport(TimedStatusBase):
-    slot = models.ForeignKey(BusSlot, on_delete=models.CASCADE, related_name="late_reports")
-    minutes_late = models.PositiveIntegerField(help_text="Estimated delay in minutes")
-    note = models.CharField(max_length=255, blank=True)
-
-    class Meta:
-        ordering = ["-created_at"]
+        ordering = ["number"]
 
     def __str__(self):
-        return f"{self.slot} — {self.minutes_late} min late"
+        return f"Bus {self.number}"
 
 
-class Announcement(TimedStatusBase):
-    loop = models.CharField(
-        max_length=10, choices=Looptype.choices, null=True, blank=True,
-        help_text="Leave blank for a system-wide announcement"
-    )
-    message = models.CharField(max_length=255)
+class BusStatus(models.Model):
+    #related_name lets acess to records by calling i.e bus.statuses.all()
+    #Forein key litterally calles the Bus class/model above^^^
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name= "statuses") #on delete means if bus column is deleted the whole row is deleted
+    date = models.DateField(default = timezone.localdate)
+    is_late = models.BooleanField(default= False) #If bus is late
+    arrived_time = models.TimeField(null = True, blank= True)
+    updated_at = models.DateTimeField(auto_now = True)
 
     class Meta:
-        ordering = ["-created_at"]
+        '''This class orders data by date and bus number ; Prevents duplicate bus number entries in same day'''
+        ordering = ["date", "bus__number"]
+        constraints = [
+            models.UniqueConstraint(fields = ["bus", "date"], name = "Unique_bus_per_day")
+        ]
 
-    def __str__(self):
-        scope = self.get_loop_display() if self.loop else "All Loops"
-        return f"[{scope}] {self.message[:40]}"
+    @property #lets this function acess class vars
+    def arrived(self):
+        return self.arrived_time is not None #Returns true if its not empty or Null/None
+
+    @classmethod
+    def status_for(cls ,bus, date = None):
+        return cls.objects.filter(bus = bus, date = date or timezone.localdate()).first()
+
+

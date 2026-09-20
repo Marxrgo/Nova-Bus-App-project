@@ -55,7 +55,7 @@ def resolve_report(request, report_id):
     report.resolve()
     return redirect("latebus:dashboard")
 
-
+'''
 @login_required
 def create_announcement(request):
     if not (request.user.is_superuser or request.user.managed_loop):
@@ -78,7 +78,7 @@ elif not request.user.is_superuser:
         form = AnnouncementForm()
     return render(request, "latebus/announcement_form.html", {"form": form})
 
-
+'''
 @login_required
 def resolve_announcement(request, announcement_id):
     ann = get_object_or_404(Announcement, id=announcement_id)
