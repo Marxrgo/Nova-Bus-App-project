@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
-from loops.views import is_loop_manager
-from loops.models import BusSlot
+from PM.views import is_loop_manager
+from PM.models import BusSlot
 from .models import LateReport, Announcement
 from .forms import LateReportForm, AnnouncementForm
 

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 
-from loops.models import BusSlot, Looptype
+from PM.models import BusSlot, Looptype
 
 
 class TimedStatusBase(models.Model):

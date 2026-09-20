@@ -25,12 +25,15 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kzpqbv(t!2*8w#6zr@luk5223)+b93cjca#2k-b6b0c5ezg_5p'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "") #From .env
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True" #From .env
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if host] #From .env
+
+#Teachers
+TEACHER_ACESS_KEY = os.environ["TEACHER_ACESS_KEY"]
 
 
 # Application definition
@@ -42,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'loops',
-    'latebus',
+    'PM',
+    'AM',
     'accounts',
 ]
 
@@ -92,6 +95,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        "OPTIONS": {
+            "timeout": 20,
+            "transaction_mode": "IMMEDIATE",
+            "init_command": "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;"
+        }
     }
 }
 

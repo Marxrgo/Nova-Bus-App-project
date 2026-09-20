@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class LatebusConfig(AppConfig):
-    name = 'latebus'
+    name = 'AM'
+    label = 'latebus'

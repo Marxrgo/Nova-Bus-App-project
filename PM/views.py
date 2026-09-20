@@ -16,12 +16,16 @@ def is_loop_manager(user, loop): #helper function
 def loop_index(request):
     return render(request, 'loops/index.html')
 
-
-def loop_dashboard(request, loop): #renders dash for either loop
+def _check_loop(loop): #Checks if loop type is valid // Helper function
     if loop not in Looptype.values:
         raise Http404("Unknown loop")
 
-    slots = list(BusSlot.objects.filter(loop = loop).values()) #filters for either bus or ib loop
+
+def loop_dashboard(request, loop):
+    '''Renders dash for either loop'''
+    _check_loop(loop) #Checks loop
+
+    slots = BusSlot.objects.filter(loop = loop)# Finds buses for whichever loop
     #template_name = f'loops/{loop.lower()}_loop.html'  #loads corrent html/css accoding to each loop
 
     context = {
@@ -31,7 +35,14 @@ def loop_dashboard(request, loop): #renders dash for either loop
     }
 
     #return render(request, template_name, context)
-    return JsonResponse(context)
+    return render(request, "loops/loop.html", context)
+
+
+def loop_data(request, loop):
+    '''This is for JSON data requests'''
+    _check_loop(loop)
+    slots = list(BusSlot.objects.filter(loop = loop).values("id", "slot_number", "bus_number"))
+    return JsonResponse({"slots": list(slots)})
 
 # Restrict slot modifcation to loggin-in admins
 @login_required

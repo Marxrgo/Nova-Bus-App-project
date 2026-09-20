@@ -4,7 +4,7 @@ from django.db import models
 
 # accounts/models.py
 from django.contrib.auth.models import AbstractUser ##TODO review this
-from loops.models import Looptype
+from PM.models import Looptype
 
 class User(AbstractUser):
     managed_loop = models.CharField(
