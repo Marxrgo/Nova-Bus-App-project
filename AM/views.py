@@ -1,90 +1,73 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 
-# Create your views here.
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-
-from PM.views import is_loop_manager
-from PM.models import BusSlot
-from .models import LateReport, Announcement
-from .forms import LateReportForm, AnnouncementForm
+from accounts.decorators import staff_required
+from .forms import BusStatusForm
+from .models import Bus, BusStatus
 
 
-def _active_reports_and_announcements():
-    reports = [r for r in LateReport.objects.select_related("slot") if r.is_active]
-    announcements = [a for a in Announcement.objects.all() if a.is_active]
-    return reports, announcements
+@staff_required
+def staff_dashboard(request):
+    today = timezone.localdate()
 
+    #-----
+    if request.method == "POST":
+        '''Form validation'''
+        form = BusStatusForm(request.POST)
+        if form.is_valid():
+            bus = form.cleaned_data["bus"]
+            entered_time = form.cleaned_data["time"]
 
-def late_dashboard(request):
-    """Public dashboard. Also serves as the destination for accounts:teacher_access,
-    since teacher-key entry has no dedicated feature of its own yet."""
-    reports, announcements = _active_reports_and_announcements()
-    return render(request, "latebus/late_dashboard.html", {
-        "reports": reports,
-        "announcements": announcements,
-        "via_teacher_access": request.session.get("teacher_access", False),
+            defaults = {"is_late": form.cleaned_data["is_late"]}
+            if entered_time is not None:
+                defaults["arrived_time"] = entered_time
+
+            #Upserts data into database and redirects Admin user to staff dashboard
+            BusStatus.objects.update_or_create(bus = bus, date = today, defaults= defaults)
+            messages.success(request, f"Bus {bus.number} saved")
+            return redirect("AM:staff_dashboard")
+
+    else:
+        form = BusStatusForm()
+
+    statuses = BusStatus.objects.filter(date=today).select_related("bus")
+
+    return render(request, "AM/staff_dashboard.html", {
+        "form": form,
+        "statuses":statuses,
+        "today": today,
     })
 
 
-@login_required
-def create_report(request):
-    if request.method == "POST":
-        form = LateReportForm(request.POST)
-        if form.is_valid():
-            slot = form.cleaned_data["slot"]
-            if not is_loop_manager(request.user, slot.loop):
-                raise PermissionDenied
-            report = form.save(commit=False)
-            report.created_by = request.user
-            report.save()
-            return redirect("latebus:dashboard")
-    else:
-        form = LateReportForm()
-        if not request.user.is_superuser and request.user.managed_loop:
-            form.fields["slot"].queryset = BusSlot.objects.filter(loop=request.user.managed_loop)
-    return render(request, "latebus/report_form.html", {"form": form})
+@staff_required
+@require_POST
+def mark_arrived(request, status_id):
+    status = get_object_or_404(BusStatus, id=status_id)
+    status.arrived_time = timezone.localtime().time().replace(second=0, microsecond=0)
+    status.save()
+    return redirect("AM:staff_dashboard")
 
 
-@login_required
-def resolve_report(request, report_id):
-    report = get_object_or_404(LateReport, id=report_id)
-    if not is_loop_manager(request.user, report.slot.loop):
-        raise PermissionDenied
-    report.resolve()
-    return redirect("latebus:dashboard")
 
-'''
-@login_required
-def create_announcement(request):
-    if not (request.user.is_superuser or request.user.managed_loop):
-        raise PermissionDenied
-    if request.method == "POST":
-        form = AnnouncementForm(request.POST)
-        if form.is_valid():
-loop = form.cleaned_data.get("loop")
-if loop:
-    if not is_loop_manager(request.user, loop):
-        raise PermissionDenied
-elif not request.user.is_superuser:
-    # Blank loop means "system-wide" — only superusers may post those.
-    raise PermissionDenied
-            ann = form.save(commit=False)
-            ann.created_by = request.user
-            ann.save()
-            return redirect("latebus:dashboard")
-    else:
-        form = AnnouncementForm()
-    return render(request, "latebus/announcement_form.html", {"form": form})
+@staff_required
+@require_POST
+def delete_status(request,status_id):
+    get_object_or_404(BusStatus, id = status_id).delete()
+    return redirect("AM:staff_dashboard")
 
-'''
-@login_required
-def resolve_announcement(request, announcement_id):
-    ann = get_object_or_404(Announcement, id=announcement_id)
-    if ann.loop and not is_loop_manager(request.user, ann.loop):
-        raise PermissionDenied
-    if not ann.loop and not request.user.is_superuser:
-        raise PermissionDenied
-    ann.resolve()
-    return redirect("latebus:dashboard")
+def bus_status(request, number):
+
+    bus = get_object_or_404(Bus, number = number)
+
+    return render(request, "AM/bus_number.html", {
+        "bus": bus,
+        "status": BusStatus.status_for(bus),
+        "today": timezone.localdate()
+    })
+
+
+
+
+

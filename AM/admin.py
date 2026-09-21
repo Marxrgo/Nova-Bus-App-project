@@ -1,14 +1,14 @@
 from django.contrib import admin
+from .models import Bus, BusStatus
 
 # Register your models here.
-from django.contrib import admin
-from .models import LateReport, Announcement
 
-@admin.register(LateReport)
-class LateReportAdmin(admin.ModelAdmin):
-    list_display = ("slot", "minutes_late", "created_at", "resolved_at", "is_active")
-    list_filter = ("slot__loop",)
 
-@admin.register(Announcement)
-class AnnouncementAdmin(admin.ModelAdmin):
-    list_display = ("loop", "message", "created_at", "resolved_at", "is_active")
+@admin.register(Bus)
+class BusAdmin(admin.ModelAdmin):
+    search_fields = ("number",)
+
+@admin.register(BusStatus)
+class BusStatusAdmin(admin.ModelAdmin):
+    list_display = ("bus", "date", "is_late", "arrived_time", "updated_at")
+    list_filter = ("date", "is_late")

@@ -86,3 +86,5 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.card.late { border-color: #c62828; background: #ffebee; }

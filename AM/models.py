@@ -11,6 +11,7 @@ class Bus(models.Model):
 
     class Meta:
         ordering = ["number"]
+        verbose_name_plural = "buses"
 
     def __str__(self):
         return f"Bus {self.number}"
@@ -27,6 +28,7 @@ class BusStatus(models.Model):
 
     class Meta:
         '''This class orders data by date and bus number ; Prevents duplicate bus number entries in same day'''
+        verbose_name_plural = "bus statuses"
         ordering = ["date", "bus__number"]
         constraints = [
             models.UniqueConstraint(fields = ["bus", "date"], name = "Unique_bus_per_day")

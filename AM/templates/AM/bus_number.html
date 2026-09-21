@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="30">
+    <title>Bus {{ bus.number }}</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+    <h1>Bus {{ bus.number }}</h1>
+    <p>{{ today|date:"l, M j" }}</p>
+
+    <div class="card{% if status.is_late %} late{% endif %}">
+        <div class="bus-num">
+            {% if not status %}No delay reported
+            {% elif status.arrived and status.is_late %}Arrived late at {{ status.arrived_time|time:"g:i A" }}
+            {% elif status.arrived %}Arrived at {{ status.arrived_time|time:"g:i A" }}
+            {% elif status.is_late %}Running late
+            {% else %}No delay reported{% endif %}
+        </div>
+        {% if status %}<p>Updated {{ status.updated_at|time:"g:i A" }}</p>{% endif %}
+    </div>
+</body>
+</html>

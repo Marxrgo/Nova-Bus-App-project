@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Buses – Staff</title>
+    <link rel="stylesheet" href="{% static 'loops/style.css' %}">
+</head>
+<body>
+    <h1>Morning Buses — {{ today|date:"D M j" }}</h1>
+
+    {% for m in messages %}<p><strong>{{ m }}</strong></p>{% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <p>
+            <label for="{{ form.bus.id_for_label }}">Bus number</label>
+            {{ form.bus }} {{ form.bus.errors }}
+        </p>
+        <p>
+            {{ form.is_late }}
+            <label for="{{ form.is_late.id_for_label }}">Bus is late</label>
+        </p>
+        <p>
+            Arrival time (leave blank if it hasn't arrived):
+            {{ form.preset }} or {{ form.typed }}
+            {{ form.preset.errors }} {{ form.typed.errors }}
+        </p>
+        <button type="submit">Save</button>
+    </form>
+
+    <h2>Today</h2>
+    <div class="grid">
+        {% for s in statuses %}
+            <div class="card{% if s.is_late %} late{% endif %}">
+                <div class="bus-num">Bus {{ s.bus.number }}</div>
+                <div>
+                    {% if s.arrived %}Arrived {{ s.arrived_time|time:"g:i A" }}
+                    {% elif s.is_late %}Late, not here yet
+                    {% else %}No delay{% endif %}
+                </div>
+
+                {% if not s.arrived %}
+                    <form method="post" action="{% url 'AM:mark_arrived' s.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Arrived now</button>
+                    </form>
+                {% endif %}
+                <form method="post" action="{% url 'AM:delete_status' s.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="danger">Delete</button>
+                </form>
+            </div>
+        {% empty %}
+            <p>No buses reported yet today.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
